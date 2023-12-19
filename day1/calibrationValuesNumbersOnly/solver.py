@@ -4,7 +4,7 @@
 import os
 import numbers
 
-file_path = os.getcwd() + "/day1/calibrationValues/input.txt"
+file_path = os.getcwd() + "/day1/input.txt"
 
 # All Calibration Numbers
 calib_nums = []
