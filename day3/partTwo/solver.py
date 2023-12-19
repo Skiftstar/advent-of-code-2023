@@ -2,19 +2,19 @@ import os
 
 file_path = os.getcwd() + "/day3/input.txt"
 
-# All Part IDs
-part_ids = []
+# All Part IDs with Gears adjacent
+part_ids_with_gears = []
 
 # Stores what indexes need to be a symbol for the number to be considered a part number
 number_indexes = []
-# Stores in what indexes a symbol is stored
-symbol_index = []
+# Stores in what indexes a gear is stored
+gear_index = []
 # Stores what indexes to ignore (from multichar numbers)
 ignore = []
 
 # Cancels the search early if the number is too big
 def in_array(index) -> bool:
-    for num in symbol_index:
+    for num in gear_index:
         if (num > index):
             return False
         elif num == index:
@@ -76,8 +76,8 @@ with open(file_path) as file:
 
             # If the character is a symbol (so not a number or a .)
             # Note its index
-            elif char != '.':
-                symbol_index.append(index)
+            elif char == '*':
+                gear_index.append(index)
 
             index = index + 1
         
@@ -87,12 +87,39 @@ for obj in number_indexes:
     number = obj['number']
     for index in check_indexes:
         if in_array(index):
-            part_ids.append(number)
-            break
+            part_ids_with_gears.append(dict(number=number, index=index))
+
+# Gear Ratios
+ratios = []
+
+# Gears that have already been checked
+checked_indexes = []
+
+for index, obj in enumerate(part_ids_with_gears):
+    # If Gear has already been checked, ignore
+    if obj['index'] in checked_indexes:
+        continue
+
+    numbers_with_same_gear = []
+    for compare_index, compare in enumerate(part_ids_with_gears):
+        # Ignore same object
+        if index == compare_index:
+            continue
+        
+        # If objects share same gear
+        if obj['index'] == compare['index']:
+            numbers_with_same_gear.append(compare['number'])
+    
+    # If gear is only adjacent to two part numbers (= Gear is Valid), then make gear ratio
+    if len(numbers_with_same_gear) == 1:
+        ratios.append(numbers_with_same_gear[0] * obj['number'])
+
+    # Mark Gear as 'checked'
+    checked_indexes.append(obj['index'])
             
-# Make sum of all part ids
+# Make sum of all ratios
 result = 0
-for num in part_ids:
+for num in ratios:
     result = result + num
 
 print(result)
